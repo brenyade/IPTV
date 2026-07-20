@@ -17,6 +17,19 @@ export async function fetchText(url) {
   return r.text()
 }
 
+export async function fetchEpg(url) {
+  const r = await fetch(`/api/epg?url=${encodeURIComponent(url)}`)
+  if (!r.ok) {
+    let msg = `HTTP ${r.status}`
+    try {
+      const j = await r.json()
+      if (j.error) msg = j.error
+    } catch {}
+    throw new Error(msg)
+  }
+  return r.text()
+}
+
 export async function fetchJson(url) {
   const r = await fetch(`/api/json?url=${encodeURIComponent(url)}`)
   const data = await r.json().catch(() => ({}))

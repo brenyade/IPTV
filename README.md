@@ -10,7 +10,10 @@ It plays:
 - **Xtream Codes** panels — server URL + username + password (live streams)
 - HLS (`.m3u8`), MPEG‑TS (`.ts`) live streams, and direct media (`.mp4`, etc.)
 
+…with a real **EPG** (program guide) and a dedicated **Sports** section.
+
 ![Live Guide](docs/guide.png)
+![Sports](docs/sports.png)
 
 ## Why there's a small backend
 
@@ -19,6 +22,7 @@ can't fetch `http://` streams from an `https://` page. So the app ships with a t
 Express server that:
 
 - proxies playlist/Xtream API fetches (`/api/fetch`, `/api/json`)
+- fetches EPG feeds and transparently gunzips `.xml.gz` (`/api/epg`)
 - relays HLS/TS streams and **rewrites manifest URLs** so nested playlists and
   segments keep flowing through the proxy (`/api/stream`)
 - serves the built React app in production
@@ -57,8 +61,18 @@ https://iptv-org.github.io/iptv/categories/news.m3u
 
 - **Live Guide** — YouTube‑TV‑style grid: sticky channel rail with logos + numbers,
   scrollable time header, program blocks, a live red "now" line, and category filter
-  chips. EPG is used when a source provides it; otherwise a stable schedule is
-  synthesized so the guide always renders.
+  chips.
+- **EPG (XMLTV)** — real program data with titles, times, descriptions and a ● LIVE
+  marker on the current show. Sources:
+  - **M3U** — auto‑detected from the playlist header (`url-tvg` / `x-tvg-url`), or set
+    an EPG URL manually in *Add source*. Plain `.xml` and gzipped `.xml.gz` feeds are
+    both supported (the backend gunzips transparently).
+  - **Xtream Codes** — pulled automatically from the panel's `xmltv.php`.
+  Channels with no EPG fall back to a stable synthesized schedule so the grid is never
+  empty.
+- **Sports** — a dedicated section that finds sports across channel names, categories
+  **and** EPG (so a general channel airing a live match shows up): a "Live sports right
+  now" shelf (EPG‑driven) plus a sports‑only Live Guide.
 - **Home** — featured hero + horizontal shelves (Continue watching, Favorites, and a
   row per category).
 - **Search** — instant filtering across every channel in every source.

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
-import ChannelCard, { initials } from './ChannelCard.jsx'
+import ChannelCard from './ChannelCard.jsx'
 import { nowProgram } from '../lib/guide.js'
+import { useEpg } from '../lib/epgContext.js'
 import { Play } from './Icons.jsx'
 
 function Shelf({ title, items, onPlay }) {
@@ -21,8 +22,9 @@ function Shelf({ title, items, onPlay }) {
 }
 
 export default function Home({ channels, groups, favorites, recents, onPlay }) {
+  const epg = useEpg()
   const featured = channels[0]
-  const prog = featured ? nowProgram(featured) : null
+  const prog = featured ? nowProgram(featured, epg) : null
 
   const favChannels = useMemo(
     () => favorites.map((id) => channels.find((c) => c.id === id)).filter(Boolean),

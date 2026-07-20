@@ -4,12 +4,14 @@ import mpegts from 'mpegts.js'
 import { streamUrl } from '../lib/api.js'
 import { Back, Heart } from './Icons.jsx'
 import { nowProgram } from '../lib/guide.js'
+import { useEpg } from '../lib/epgContext.js'
 
 function extOf(u) {
   return (u || '').toLowerCase().split('?')[0].split('.').pop()
 }
 
 export default function Player({ channel, onClose, isFav, onToggleFav }) {
+  const epg = useEpg()
   const videoRef = useRef(null)
   const [status, setStatus] = useState('loading') // loading | playing | error
   const [errMsg, setErrMsg] = useState('')
@@ -101,7 +103,8 @@ export default function Player({ channel, onClose, isFav, onToggleFav }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const prog = channel.kind === 'live' ? nowProgram(channel) : null
+  const prog = channel.kind === 'live' ? nowProgram(channel, epg) : null
+  const fmt = (t) => new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
 
   return (
     <div className="player-overlay">
@@ -117,6 +120,7 @@ export default function Player({ channel, onClose, isFav, onToggleFav }) {
             <div className="psub">
               {channel.name}
               {channel.group ? ` · ${channel.group}` : ''}
+              {prog && prog.real ? ` · ${fmt(prog.start)} – ${fmt(prog.end)}` : ''}
             </div>
           </div>
           <button

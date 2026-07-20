@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, useEffect } from 'react'
 import { PX_PER_MIN, SLOT_MIN, floorToSlot, buildSchedule } from '../lib/guide.js'
+import { useEpg } from '../lib/epgContext.js'
 import { ChLogo } from './ChannelCard.jsx'
 
 const HOURS_AHEAD = 12
@@ -12,6 +13,7 @@ function fmtTime(d) {
 export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPlay }) {
   const [now, setNow] = useState(Date.now())
   const scrollRef = useRef(null)
+  const epg = useEpg()
 
   // Tick the "now" line every 30s.
   useEffect(() => {
@@ -44,9 +46,9 @@ export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPl
     () =>
       channels.map((ch) => ({
         ch,
-        progs: buildSchedule(ch, windowStart, windowEnd)
+        progs: buildSchedule(ch, windowStart, windowEnd, epg)
       })),
-    [channels, windowStart, windowEnd]
+    [channels, windowStart, windowEnd, epg]
   )
 
   return (
@@ -103,6 +105,7 @@ export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPl
                       className={'prog' + (isLive ? ' live' : '')}
                       style={{ left, width }}
                       onClick={() => onPlay(ch)}
+                      title={p.desc ? `${p.title}\n\n${p.desc}` : p.title}
                     >
                       <div className="prog-title">
                         {isLive && <span className="livedot">● LIVE</span>}

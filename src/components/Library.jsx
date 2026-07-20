@@ -31,6 +31,8 @@ export default function Library({ sources, channels, favorites, onPlay, onAdd, o
                 : s.status === 'error'
                 ? s.error || 'Error'
                 : 'Loading…'}
+              {s.status === 'ok' && s.epg === 'ok' ? ` · EPG: ${s.epgCount} ch` : ''}
+              {s.status === 'ok' && s.epg === 'loading' ? ' · EPG…' : ''}
             </div>
             <button className="linkbtn" onClick={() => onRemoveSource(s.id)}>
               Remove

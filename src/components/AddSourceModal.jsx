@@ -8,6 +8,7 @@ export default function AddSourceModal({ onClose, onAdd }) {
 
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
+  const [epgUrl, setEpgUrl] = useState('')
   const [server, setServer] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -29,10 +30,20 @@ export default function AddSourceModal({ onClose, onAdd }) {
       setBusy(true)
       if (tab === 'm3u') {
         if (!url.trim()) throw new Error('Enter a playlist URL')
-        await onAdd({ type: 'm3u', name: name.trim() || hostOf(url), url: url.trim() })
+        await onAdd({
+          type: 'm3u',
+          name: name.trim() || hostOf(url),
+          url: url.trim(),
+          epgUrl: epgUrl.trim()
+        })
       } else if (tab === 'file') {
         if (!fileText) throw new Error('Choose an .m3u / .m3u8 file')
-        await onAdd({ type: 'm3u', name: name.trim() || fileName || 'Local playlist', text: fileText })
+        await onAdd({
+          type: 'm3u',
+          name: name.trim() || fileName || 'Local playlist',
+          text: fileText,
+          epgUrl: epgUrl.trim()
+        })
       } else {
         if (!server.trim() || !username.trim() || !password.trim())
           throw new Error('Server, username and password are required')
@@ -87,6 +98,17 @@ export default function AddSourceModal({ onClose, onAdd }) {
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com/playlist.m3u8"
+              />
+            </div>
+          )}
+
+          {(tab === 'm3u' || tab === 'file') && (
+            <div className="field">
+              <label>EPG / XMLTV URL (optional — auto-detected from the playlist if omitted)</label>
+              <input
+                value={epgUrl}
+                onChange={(e) => setEpgUrl(e.target.value)}
+                placeholder="https://example.com/epg.xml or epg.xml.gz"
               />
             </div>
           )}

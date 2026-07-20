@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { nowProgram } from '../lib/guide.js'
+import { useEpg } from '../lib/epgContext.js'
 
 export function initials(name) {
   return (name || '?')
@@ -23,7 +24,8 @@ export function ChLogo({ channel, className = 'card-chlogo' }) {
 
 export default function ChannelCard({ channel, onPlay }) {
   const [thumbFailed, setThumbFailed] = useState(false)
-  const prog = channel.kind === 'live' ? nowProgram(channel) : null
+  const epg = useEpg()
+  const prog = channel.kind === 'live' ? nowProgram(channel, epg) : null
   return (
     <div className="card" onClick={() => onPlay(channel)}>
       <div className="card-thumb">

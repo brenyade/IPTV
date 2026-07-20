@@ -36,6 +36,13 @@ export function seriesUrl(account, episodeId, ext) {
   return `${base(account.server)}/series/${account.username}/${account.password}/${episodeId}.${ext || 'mp4'}`
 }
 
+// Full XMLTV EPG for the whole account (one fetch instead of per-channel calls).
+export function xtreamEpgUrl(account) {
+  return `${base(account.server)}/xmltv.php?username=${encodeURIComponent(
+    account.username
+  )}&password=${encodeURIComponent(account.password)}`
+}
+
 export async function loadXtreamChannels(account) {
   const [liveCats, liveStreams] = await Promise.all([
     fetchJson(apiUrl(account, { action: 'get_live_categories' })).catch(() => []),

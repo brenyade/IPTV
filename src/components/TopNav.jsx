@@ -1,6 +1,6 @@
 import { Search, Plus } from './Icons.jsx'
 
-const TABS = ['Library', 'Home', 'Live']
+const TABS = ['Library', 'Home', 'Live', 'Sports']
 
 export default function TopNav({ view, onView, onAdd, query, onQuery }) {
   return (

@@ -636,6 +636,32 @@ button {
   margin-top: 2px;
 }
 
+/* ---------- Sports view ---------- */
+.sports-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.sports-hero-wrap {
+  flex: 0 0 auto;
+  overflow: hidden;
+  padding-bottom: 6px;
+}
+.sports-hero {
+  height: 240px;
+  margin: 16px 24px 4px;
+  background: linear-gradient(120deg, #10251a, #123a2a 55%, #0a2c3a);
+}
+.sports-guide-head {
+  padding: 6px 24px 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.sports-guide {
+  flex: 1;
+  min-height: 300px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
 /* ---------- Library grid ---------- */
 .section-title {
   font-size: 20px;

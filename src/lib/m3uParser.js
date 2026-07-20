@@ -16,6 +16,30 @@ function parseAttrs(line) {
   return attrs
 }
 
+// The display name in an #EXTINF line is everything after the first comma that
+// is NOT inside a quoted attribute value. Attribute values (e.g. a
+// http-user-agent="Mozilla/5.0 ...like Gecko) Chrome/1,2...") can themselves
+// contain commas, so a naive indexOf(',') splits in the wrong place.
+function nameCommaIndex(line) {
+  let inQuotes = false
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i]
+    if (c === '"') inQuotes = !inQuotes
+    else if (c === ',' && !inQuotes) return i
+  }
+  return -1
+}
+
+// Many playlists declare their EPG in the header, e.g.
+//   #EXTM3U url-tvg="http://host/epg.xml" x-tvg-url="..."
+// Returns the first such URL (may be comma-separated; we take the first).
+export function extractEpgUrl(text) {
+  const firstLine = (text || '').split(/\r?\n/, 1)[0] || ''
+  const m = /(?:url-tvg|x-tvg-url|tvg-url)="([^"]+)"/i.exec(firstLine)
+  if (!m) return ''
+  return m[1].split(',')[0].trim()
+}
+
 export function parseM3U(text) {
   const lines = text.split(/\r?\n/)
   const channels = []
@@ -28,7 +52,7 @@ export function parseM3U(text) {
 
     if (line.startsWith('#EXTINF')) {
       const attrs = parseAttrs(line)
-      const commaIdx = line.indexOf(',')
+      const commaIdx = nameCommaIndex(line)
       const name = commaIdx >= 0 ? line.slice(commaIdx + 1).trim() : attrs['tvg-name'] || 'Unknown'
       current = {
         id: nextId(),

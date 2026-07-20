@@ -9,6 +9,7 @@ import express from 'express'
 import cors from 'cors'
 import compression from 'compression'
 import path from 'node:path'
+import zlib from 'node:zlib'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -61,6 +62,30 @@ app.get('/api/json', async (req, res) => {
     } catch {
       res.status(502).json({ error: 'Upstream did not return JSON', body: text.slice(0, 300) })
     }
+  } catch (e) {
+    res.status(502).json({ error: String(e.message || e) })
+  }
+})
+
+// ---- EPG fetch (XMLTV, possibly gzipped) ------------------------------------
+// Returns raw XMLTV text. Transparently gunzips .xml.gz feeds (detected by the
+// gzip magic bytes, not just the extension) so the browser gets plain XML.
+app.get('/api/epg', async (req, res) => {
+  const target = req.query.url
+  if (!target) return res.status(400).json({ error: 'Missing url' })
+  try {
+    const r = await fetchWithTimeout(
+      target,
+      { headers: { 'User-Agent': UA, Accept: '*/*' } },
+      45000
+    )
+    if (!r.ok) return res.status(r.status).json({ error: `Upstream ${r.status}` })
+    const buf = Buffer.from(await r.arrayBuffer())
+    const gzipped =
+      (buf.length > 2 && buf[0] === 0x1f && buf[1] === 0x8b) ||
+      target.toLowerCase().split('?')[0].endsWith('.gz')
+    const xml = gzipped ? zlib.gunzipSync(buf).toString('utf8') : buf.toString('utf8')
+    res.type('application/xml').send(xml)
   } catch (e) {
     res.status(502).json({ error: String(e.message || e) })
   }
