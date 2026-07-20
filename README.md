@@ -14,7 +14,8 @@ It plays:
 
 ![Live Guide](docs/guide.png)
 ![Sports hub](docs/sports-hub.png)
-![Game detail](docs/game.png)
+![Game timeline](docs/game-timeline.png)
+![Team page](docs/team.png)
 
 ## Why there's a small backend
 
@@ -80,13 +81,26 @@ https://iptv-org.github.io/iptv/categories/news.m3u
   - Also finds sports across your own channel names/categories/EPG for a "on your
     channels now" shelf and a sports‑only channel guide.
 
-  Six extra features layered on top:
+  Extra features layered on top:
   1. **Live score ticker** — auto‑refreshing scores across every league.
   2. **Favorite teams** — star teams; a "Your teams — next up" rail shows their next games.
   3. **Game reminders** — set a bell on an upcoming game; get an in‑app "starting soon" alert.
   4. **Standings** — a per‑league standings table.
-  5. **Multiview** — watch up to 4 games/channels at once in a grid; click a tile to move audio to it.
+  5. **Multiview** — watch up to 4 games/channels at once in a grid; click a tile (or press 1–4) to move audio to it.
   6. **Multi‑day schedule browser** — day chips (yesterday … +4 days) to scan each sport's full slate.
+  7. **Box‑score stats** — per‑match stat bars (shots, possession, …) on a Stats tab, live‑refreshed.
+  8. **Lineups** — starting XI / roster per side, each player clickable through to their profile.
+  9. **Play‑by‑play timeline** — goals, cards and subs minute‑by‑minute, auto‑updating for live games.
+  10. **Recent form & highlights** — W/L/D form pills for both sides plus an embedded highlights reel.
+  11. **Team pages** — badge, stadium, capacity, description, recent results, upcoming fixtures and full squad.
+  12. **Player pages** — photo, position, nationality, bio — reached from lineups, rosters or search.
+  13. **Global sports search** — find any team, player or match across the API.
+  14. **"Live now" hub** — one auto‑refreshing screen of every game live across all sports.
+  15. **"My Sports" dashboard** — followed teams, their next games, and your reminders (with **.ics calendar export**).
+
+  Playback extras that pair with sports: **Picture‑in‑Picture**, a **floating mini‑player** (keep watching
+  while you browse), **live DVR** (rewind / start‑over / jump‑to‑live), and **keyboard shortcuts**
+  (space, f, m, i, ←/→, l).
 - **Home** — featured hero + horizontal shelves (Continue watching, Favorites, and a
   row per category).
 - **Search** — instant filtering across every channel in every source.

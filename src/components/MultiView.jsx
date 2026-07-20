@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePlayer } from '../lib/usePlayer.js'
 import { Close } from './Icons.jsx'
 
@@ -32,6 +32,17 @@ export default function MultiView({ channels, onClose, onRemove }) {
   // Which tile has audio (others muted), YouTube-TV Multiview style.
   const [focusId, setFocusId] = useState(channels[0]?.id)
   const cols = channels.length <= 1 ? 1 : channels.length <= 4 ? 2 : 3
+
+  // Number keys 1-9 move audio focus between tiles; Esc closes.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') return onClose()
+      const n = parseInt(e.key, 10)
+      if (n >= 1 && n <= channels.length) setFocusId(channels[n - 1].id)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [channels, onClose])
 
   return (
     <div className="player-overlay mv-overlay">

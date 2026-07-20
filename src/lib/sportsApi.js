@@ -150,3 +150,117 @@ export async function todayAcross(leagueIds, dateStr) {
   )
   return lists.flat().sort(sortGames)
 }
+
+// Every live game right now across the major leagues.
+export async function liveAcross(leagueIds, dateStr) {
+  const all = await todayAcross(leagueIds, dateStr)
+  return all.filter((g) => g.state === 'live')
+}
+
+// ---- team / player / lineup / timeline / stats / search --------------------
+export function normalizeTeam(t) {
+  if (!t) return null
+  return {
+    id: t.idTeam,
+    name: t.strTeam,
+    badge: t.strTeamBadge || t.strBadge,
+    banner: t.strTeamBanner,
+    fanart: t.strTeamFanart1,
+    league: t.strLeague,
+    sport: t.strSport,
+    formed: t.intFormedYear,
+    stadium: t.strStadium,
+    stadiumLoc: t.strStadiumLocation,
+    capacity: t.intStadiumCapacity,
+    website: t.strWebsite,
+    color: t.strColour1,
+    color2: t.strColour2,
+    desc: t.strDescriptionEN
+  }
+}
+
+export async function lookupTeamFull(id) {
+  const d = await get(`/lookupteam.php?id=${id}`)
+  return normalizeTeam(d.teams?.[0])
+}
+export async function teamForm(teamId) {
+  const d = await get(`/eventslast.php?id=${teamId}`)
+  return (d.results || d.events || []).map(normalizeEvent)
+}
+export async function teamRoster(teamId) {
+  const d = await get(`/lookup_all_players.php?id=${teamId}`)
+  return (d.player || []).map(normalizePlayer)
+}
+
+export function normalizePlayer(p) {
+  if (!p) return null
+  return {
+    id: p.idPlayer,
+    name: p.strPlayer,
+    team: p.strTeam,
+    teamId: p.idTeam,
+    position: p.strPosition,
+    number: p.strNumber,
+    thumb: p.strThumb || p.strCutout,
+    nationality: p.strNationality,
+    born: p.dateBorn,
+    height: p.strHeight,
+    weight: p.strWeight,
+    desc: p.strDescriptionEN,
+    sport: p.strSport
+  }
+}
+export async function lookupPlayer(id) {
+  const d = await get(`/lookupplayer.php?id=${id}`)
+  return normalizePlayer(d.players?.[0])
+}
+
+export async function lineup(eventId) {
+  const d = await get(`/lookuplineup.php?id=${eventId}`)
+  const rows = d.lineup || []
+  const home = rows.filter((r) => r.strHome === 'Yes')
+  const away = rows.filter((r) => r.strHome === 'No')
+  const map = (r) => ({
+    id: r.idPlayer,
+    name: r.strPlayer,
+    position: r.strPosition,
+    number: r.intSquadNumber,
+    sub: r.strSubstitute === 'Yes'
+  })
+  return { home: home.map(map), away: away.map(map) }
+}
+
+export async function eventStats(eventId) {
+  const d = await get(`/lookupeventstats.php?id=${eventId}`)
+  return (d.eventstats || []).map((s) => ({
+    stat: s.strStat,
+    home: s.intHome,
+    away: s.intAway
+  }))
+}
+
+export async function timeline(eventId) {
+  const d = await get(`/lookuptimeline.php?id=${eventId}`)
+  return (d.timeline || []).map((t) => ({
+    minute: t.intTime,
+    type: t.strTimeline,
+    detail: t.strTimelineDetail,
+    home: t.strHome === 'Yes',
+    player: t.strPlayer,
+    assist: t.strAssist,
+    comment: t.strComment
+  }))
+}
+
+export async function searchTeams(q) {
+  const d = await get(`/searchteams.php?t=${encodeURIComponent(q)}`)
+  return (d.teams || []).map(normalizeTeam)
+}
+export async function searchPlayers(q) {
+  const d = await get(`/searchplayers.php?p=${encodeURIComponent(q)}`)
+  return (d.player || []).map(normalizePlayer)
+}
+export async function searchEvents(q) {
+  const d = await get(`/searchevents.php?e=${encodeURIComponent(q)}`)
+  return (d.event || []).map(normalizeEvent)
+}

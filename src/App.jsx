@@ -8,6 +8,7 @@ import AddSourceModal from './components/AddSourceModal.jsx'
 import Player from './components/Player.jsx'
 import Sports from './components/Sports.jsx'
 import MultiView from './components/MultiView.jsx'
+import MiniPlayer from './components/MiniPlayer.jsx'
 
 import { fetchText, fetchEpg } from './lib/api.js'
 import { parseM3U, extractEpgUrl } from './lib/m3uParser.js'
@@ -44,6 +45,7 @@ export default function App() {
   const [favTeams, setFavTeams] = useState(loadFavTeams())
   const [reminders, setReminders] = useState(loadReminders())
   const [multiview, setMultiview] = useState(null) // channel[] or null
+  const [miniChannel, setMiniChannel] = useState(null) // floating mini-player
   const [toast, setToast] = useState(null)
   const [sportsKey, setSportsKey] = useState(0) // bump to reset Sports to its hub
 
@@ -192,6 +194,7 @@ export default function App() {
 
   const play = useCallback((channel) => {
     setPlaying(channel)
+    setMiniChannel(null) // full player supersedes the mini one
     setRecents(pushRecent(channel.id))
   }, [])
 
@@ -353,8 +356,22 @@ export default function App() {
           <Player
             channel={playing}
             onClose={() => setPlaying(null)}
+            onMinimize={(ch) => {
+              setMiniChannel(ch)
+              setPlaying(null)
+            }}
             isFav={favorites.includes(playing.id)}
             onToggleFav={toggleFav}
+          />
+        )}
+        {miniChannel && !playing && (
+          <MiniPlayer
+            channel={miniChannel}
+            onExpand={() => {
+              setPlaying(miniChannel)
+              setMiniChannel(null)
+            }}
+            onClose={() => setMiniChannel(null)}
           />
         )}
         {multiview && (
