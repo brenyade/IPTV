@@ -1,0 +1,31 @@
+{
+  "name": "iptv-youtubetv-player",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A full IPTV / M3U / M3U8 / Xtream Codes player with a YouTube TV-identical UI",
+  "scripts": {
+    "dev": "concurrently -k -n server,vite -c green,cyan \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "node server/index.js",
+    "dev:client": "vite",
+    "build": "vite build",
+    "start": "cross-env NODE_ENV=production node server/index.js",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "hls.js": "^1.5.13",
+    "mpegts.js": "^1.7.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "playwright": "^1.47.2",
+    "vite": "^5.4.2"
+  }
+}
