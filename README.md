@@ -13,7 +13,8 @@ It plays:
 …with a real **EPG** (program guide) and a dedicated **Sports** section.
 
 ![Live Guide](docs/guide.png)
-![Sports](docs/sports.png)
+![Sports hub](docs/sports-hub.png)
+![Game detail](docs/game.png)
 
 ## Why there's a small backend
 
@@ -70,9 +71,22 @@ https://iptv-org.github.io/iptv/categories/news.m3u
   - **Xtream Codes** — pulled automatically from the panel's `xmltv.php`.
   Channels with no EPG fall back to a stable synthesized schedule so the grid is never
   empty.
-- **Sports** — a dedicated section that finds sports across channel names, categories
-  **and** EPG (so a general channel airing a live match shows up): a "Live sports right
-  now" shelf (EPG‑driven) plus a sports‑only Live Guide.
+- **Sports** — a full sports hub built on a free public API
+  ([TheSportsDB](https://www.thesportsdb.com/)):
+  - **Major sports** grid — NBA, NFL, NHL, MLB, Premier League, MLS.
+  - Pick a sport → **all its games** (browse by day) → click a game → the **channels
+    airing it** (matched from your EPG by team names, with a sport‑based fallback) plus
+    **live stats** (score, status, venue, badges) from the API.
+  - Also finds sports across your own channel names/categories/EPG for a "on your
+    channels now" shelf and a sports‑only channel guide.
+
+  Six extra features layered on top:
+  1. **Live score ticker** — auto‑refreshing scores across every league.
+  2. **Favorite teams** — star teams; a "Your teams — next up" rail shows their next games.
+  3. **Game reminders** — set a bell on an upcoming game; get an in‑app "starting soon" alert.
+  4. **Standings** — a per‑league standings table.
+  5. **Multiview** — watch up to 4 games/channels at once in a grid; click a tile to move audio to it.
+  6. **Multi‑day schedule browser** — day chips (yesterday … +4 days) to scan each sport's full slate.
 - **Home** — featured hero + horizontal shelves (Continue watching, Favorites, and a
   row per category).
 - **Search** — instant filtering across every channel in every source.
@@ -83,7 +97,8 @@ https://iptv-org.github.io/iptv/categories/news.m3u
 
 ## Tech
 
-React + Vite frontend · Express proxy backend · hls.js · mpegts.js. No accounts,
+React + Vite frontend · Express proxy backend · hls.js · mpegts.js. Sports data from
+the free [TheSportsDB](https://www.thesportsdb.com/) API (proxied). No accounts,
 no database, no telemetry.
 
 ## Notes / limitations

@@ -4,6 +4,8 @@
 const KEY = 'iptv.sources.v1'
 const FAV = 'iptv.favorites.v1'
 const RECENT = 'iptv.recents.v1'
+const FAVTEAMS = 'iptv.favteams.v1'
+const REMINDERS = 'iptv.reminders.v1'
 
 export function loadSources() {
   try {
@@ -25,6 +27,30 @@ export function loadFavorites() {
 }
 export function saveFavorites(ids) {
   localStorage.setItem(FAV, JSON.stringify(ids))
+}
+
+// Favorite teams: [{ id, name, badge }]
+export function loadFavTeams() {
+  try {
+    return JSON.parse(localStorage.getItem(FAVTEAMS) || '[]')
+  } catch {
+    return []
+  }
+}
+export function saveFavTeams(list) {
+  localStorage.setItem(FAVTEAMS, JSON.stringify(list))
+}
+
+// Game reminders: [{ gameId, startMs, label }]
+export function loadReminders() {
+  try {
+    return JSON.parse(localStorage.getItem(REMINDERS) || '[]')
+  } catch {
+    return []
+  }
+}
+export function saveReminders(list) {
+  localStorage.setItem(REMINDERS, JSON.stringify(list))
 }
 
 export function loadRecents() {

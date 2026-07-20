@@ -7,6 +7,7 @@ import SearchView from './components/SearchView.jsx'
 import AddSourceModal from './components/AddSourceModal.jsx'
 import Player from './components/Player.jsx'
 import Sports from './components/Sports.jsx'
+import MultiView from './components/MultiView.jsx'
 
 import { fetchText, fetchEpg } from './lib/api.js'
 import { parseM3U, extractEpgUrl } from './lib/m3uParser.js'
@@ -19,7 +20,11 @@ import {
   loadFavorites,
   saveFavorites,
   loadRecents,
-  pushRecent
+  pushRecent,
+  loadFavTeams,
+  saveFavTeams,
+  loadReminders,
+  saveReminders
 } from './lib/storage.js'
 
 let sid = 0
@@ -36,6 +41,20 @@ export default function App() {
   const [activeGroup, setActiveGroup] = useState('All')
   const [favorites, setFavorites] = useState(loadFavorites())
   const [recents, setRecents] = useState(loadRecents())
+  const [favTeams, setFavTeams] = useState(loadFavTeams())
+  const [reminders, setReminders] = useState(loadReminders())
+  const [multiview, setMultiview] = useState(null) // channel[] or null
+  const [toast, setToast] = useState(null)
+  const [sportsKey, setSportsKey] = useState(0) // bump to reset Sports to its hub
+
+  // Clicking a tab resets that section to its root (YouTube TV behavior).
+  const handleView = useCallback(
+    (v) => {
+      if (v === 'sports' && view === 'sports') setSportsKey((k) => k + 1)
+      setView(v)
+    },
+    [view]
+  )
 
   // ---- source loading -------------------------------------------------------
   const setSourceState = useCallback((id, patch) => {
@@ -176,6 +195,70 @@ export default function App() {
     setRecents(pushRecent(channel.id))
   }, [])
 
+  const toggleFavTeam = useCallback((team) => {
+    if (!team || !team.id) return
+    setFavTeams((prev) => {
+      const next = prev.some((t) => t.id === team.id)
+        ? prev.filter((t) => t.id !== team.id)
+        : [...prev, { id: team.id, name: team.name, badge: team.badge }]
+      saveFavTeams(next)
+      return next
+    })
+  }, [])
+
+  const toggleReminder = useCallback((game) => {
+    if (!game || !game.id) return
+    setReminders((prev) => {
+      const next = prev.some((r) => r.gameId === game.id)
+        ? prev.filter((r) => r.gameId !== game.id)
+        : [...prev, { gameId: game.id, startMs: game.startMs, label: game.name, notified: false }]
+      saveReminders(next)
+      return next
+    })
+    setToast(
+      reminders.some((r) => r.gameId === game.id)
+        ? null
+        : { text: `Reminder set for ${game.name}` }
+    )
+  }, [reminders])
+
+  // Fire reminders as games are about to start (checks every 30s).
+  useEffect(() => {
+    const check = () => {
+      const now = Date.now()
+      let changed = false
+      const next = reminders.map((r) => {
+        if (!r.notified && r.startMs && r.startMs - now <= 5 * 60000 && r.startMs - now > -60 * 60000) {
+          changed = true
+          setToast({ text: `🔔 Starting soon: ${r.label}`, sticky: true })
+          return { ...r, notified: true }
+        }
+        return r
+      })
+      if (changed) {
+        setReminders(next)
+        saveReminders(next)
+      }
+    }
+    check()
+    const t = setInterval(check, 30000)
+    return () => clearInterval(t)
+  }, [reminders])
+
+  // Auto-dismiss non-sticky toasts.
+  useEffect(() => {
+    if (!toast || toast.sticky) return
+    const t = setTimeout(() => setToast(null), 3500)
+    return () => clearTimeout(t)
+  }, [toast])
+
+  const removeFromMultiview = useCallback((id) => {
+    setMultiview((prev) => {
+      const next = (prev || []).filter((c) => c.id !== id)
+      return next.length ? next : null
+    })
+  }, [])
+
   const loadingAny = sources.some((s) => s.status === 'loading')
   const hasChannels = channels.length > 0
 
@@ -207,7 +290,19 @@ export default function App() {
     }
 
     if (view === 'search') return <SearchView channels={channels} query={query} onPlay={play} />
-    if (view === 'sports') return <Sports channels={channels} onPlay={play} />
+    if (view === 'sports')
+      return (
+        <Sports
+          key={sportsKey}
+          channels={channels}
+          onPlay={play}
+          favTeams={favTeams}
+          onToggleFavTeam={toggleFavTeam}
+          reminders={reminders}
+          onToggleReminder={toggleReminder}
+          onMultiview={(list) => list && list.length && setMultiview(list)}
+        />
+      )
     if (view === 'home')
       return (
         <Home
@@ -246,7 +341,7 @@ export default function App() {
       <div className="app">
         <TopNav
           view={view}
-          onView={setView}
+          onView={handleView}
           onAdd={() => setShowAdd(true)}
           query={query}
           onQuery={setQuery}
@@ -261,6 +356,18 @@ export default function App() {
             isFav={favorites.includes(playing.id)}
             onToggleFav={toggleFav}
           />
+        )}
+        {multiview && (
+          <MultiView
+            channels={multiview}
+            onClose={() => setMultiview(null)}
+            onRemove={removeFromMultiview}
+          />
+        )}
+        {toast && (
+          <div className="toast" onClick={() => setToast(null)}>
+            {toast.text}
+          </div>
         )}
       </div>
     </EpgContext.Provider>
