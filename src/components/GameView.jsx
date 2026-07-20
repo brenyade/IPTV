@@ -9,6 +9,7 @@ import {
   timeline as fetchTimeline
 } from '../lib/sportsApi.js'
 import { channelsForGame, likelyChannels } from '../lib/gameMatch.js'
+import { geocode, forecastAt } from '../lib/weather.js'
 import { downloadIcs } from '../lib/ics.js'
 import { ChLogo } from './ChannelCard.jsx'
 import { Back, Play, Heart } from './Icons.jsx'
@@ -77,6 +78,7 @@ export default function GameView({
   const [stats, setStats] = useState(null)
   const [lineups, setLineups] = useState(null)
   const [tl, setTl] = useState(null)
+  const [weather, setWeather] = useState(null)
 
   // Refresh event + teams + form on open.
   useEffect(() => {
@@ -113,6 +115,31 @@ export default function GameView({
       fetchLineup(game.id).then(setLineups).catch(() => setLineups({ home: [], away: [] }))
     if (tab === 'timeline' && tl === null) fetchTimeline(game.id).then(setTl).catch(() => setTl([]))
   }, [tab, game.id, stats, lineups, tl])
+
+  // Gameday weather: geocode the home venue/city, forecast for kickoff.
+  useEffect(() => {
+    let alive = true
+    if (game.state === 'final') return
+    const candidates = [homeTeam?.stadiumLoc, game.venue, homeTeam?.country].filter(Boolean)
+    if (!candidates.length) return
+    geocode(candidates)
+      .then((g) => (g ? forecastAt(g.lat, g.lon, game.startMs).then((w) => w && ({ ...w, place: g.name })) : null))
+      .then((w) => alive && w && setWeather(w))
+      .catch(() => {})
+    return () => { alive = false }
+  }, [homeTeam, game.venue, game.state, game.startMs])
+
+  // Head-to-head: prior meetings drawn from both teams' recent results.
+  const h2h = useMemo(() => {
+    const all = [...forms.home, ...forms.away]
+    const seen = new Set()
+    return all.filter((e) => {
+      if (seen.has(e.id)) return false
+      seen.add(e.id)
+      const teams = [e.home, e.away]
+      return teams.includes(game.home) && teams.includes(game.away)
+    })
+  }, [forms, game.home, game.away])
 
   const matched = useMemo(() => channelsForGame(game, channels, epg), [game, channels, epg])
   const fallback = useMemo(() => (matched.length ? [] : likelyChannels(game, channels)), [matched, game, channels])
@@ -191,15 +218,30 @@ export default function GameView({
 
       {/* Tabs */}
       <div className="modal-tabs" style={{ padding: '4px 0 10px' }}>
-        {['overview', 'stats', 'lineups', 'timeline'].map((t) => (
+        {['overview', 'stats', 'lineups', 'timeline', 'h2h'].map((t) => (
           <button key={t} className={'modal-tab' + (tab === t ? ' active' : '')} onClick={() => setTab(t)}>
-            {t[0].toUpperCase() + t.slice(1)}
+            {t === 'h2h' ? 'H2H' : t[0].toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
       {tab === 'overview' && (
         <>
+          {weather && (
+            <div className="weather-card">
+              <span className="wx-emoji">{weather.emoji}</span>
+              <div className="wx-main">
+                <div className="wx-temp">{weather.tempC}°C · {weather.text}</div>
+                <div className="wx-sub">
+                  {weather.place ? `${weather.place} · ` : ''}
+                  {weather.precip != null ? `${weather.precip}% precip · ` : ''}
+                  wind {weather.windKph} km/h
+                </div>
+              </div>
+              <span className="wx-tag">Gameday weather</span>
+            </div>
+          )}
+
           <div className="section-title" style={{ paddingLeft: 0 }}>
             {matched.length ? 'Airing now on your channels' : 'Sports channels that may carry this'}
           </div>
@@ -261,6 +303,7 @@ export default function GameView({
       {tab === 'stats' && <StatsPanel stats={stats} away={game.away} home={game.home} />}
       {tab === 'lineups' && <LineupPanel lineups={lineups} game={game} onOpenPlayer={onOpenPlayer} />}
       {tab === 'timeline' && <TimelinePanel tl={tl} game={game} />}
+      {tab === 'h2h' && <H2HPanel h2h={h2h} game={game} />}
     </div>
   )
 }
@@ -333,6 +376,39 @@ function TimelinePanel({ tl, game }) {
           <span className="tl-side">{e.home ? game.home : game.away}</span>
         </div>
       ))}
+    </div>
+  )
+}
+
+function H2HPanel({ h2h, game }) {
+  if (!h2h.length) return <div className="source-sub">No recent head-to-head meetings found.</div>
+  let homeW = 0, awayW = 0, draws = 0
+  for (const e of h2h) {
+    const hs = +e.homeScore, as = +e.awayScore
+    if (!Number.isFinite(hs) || !Number.isFinite(as)) continue
+    const winner = hs > as ? e.home : as > hs ? e.away : null
+    if (!winner) draws++
+    else if (winner === game.home) homeW++
+    else awayW++
+  }
+  return (
+    <div className="h2h">
+      <div className="h2h-summary">
+        <div className="h2h-side"><b>{homeW}</b><span>{game.home}</span></div>
+        <div className="h2h-side draw"><b>{draws}</b><span>Draws</span></div>
+        <div className="h2h-side"><b>{awayW}</b><span>{game.away}</span></div>
+      </div>
+      <div className="glist">
+        {h2h.map((e) => (
+          <div className="grow" key={e.id} style={{ cursor: 'default' }}>
+            <span className="grow-state final">{e.date || 'Final'}</span>
+            <span className="grow-teams">
+              <span className="grow-team">{e.away}<b className="grow-score">{e.awayScore ?? 0}</b></span>
+              <span className="grow-team">{e.home}<b className="grow-score">{e.homeScore ?? 0}</b></span>
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }

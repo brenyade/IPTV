@@ -9,9 +9,11 @@ import PlayerView from './PlayerView.jsx'
 import SportsSearch from './SportsSearch.jsx'
 import LiveNow from './LiveNow.jsx'
 import MySports from './MySports.jsx'
+import SportsNews from './SportsNews.jsx'
 import { useEpg } from '../lib/epgContext.js'
 import { isSportsText, programmeAt, programmeIsSports } from '../lib/epg.js'
 import { LEAGUES, SPORT_CATEGORIES, teamNextGames } from '../lib/sportsApi.js'
+import { loadPinnedLeagues, savePinnedLeagues } from '../lib/storage.js'
 import { Back } from './Icons.jsx'
 
 function useSportsChannels(channels, epg) {
@@ -51,6 +53,31 @@ export default function Sports({
   const [nav, setNav] = useState({ level: 'hub' })
   const [group, setGroup] = useState('All')
   const [teamGames, setTeamGames] = useState([])
+  const [pinned, setPinned] = useState(loadPinnedLeagues())
+
+  const togglePin = (key) => {
+    setPinned((prev) => {
+      const next = prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      savePinnedLeagues(next)
+      return next
+    })
+  }
+  const LeagueCard = ({ l }) => (
+    <div className="league-card-wrap">
+      <button className="league-card" onClick={() => push({ level: 'league', league: l })}>
+        <span className="lc-emoji">{l.emoji}</span>
+        <span className="lc-name">{l.name}</span>
+        <span className="lc-sport">{l.sport}</span>
+      </button>
+      <button
+        className={'lc-pin' + (pinned.includes(l.key) ? ' on' : '')}
+        title={pinned.includes(l.key) ? 'Unpin league' : 'Pin league'}
+        onClick={() => togglePin(l.key)}
+      >
+        ★
+      </button>
+    </div>
+  )
 
   // Navigation stack via linked back-pointers so Back always returns to origin.
   const push = (node) => setNav((cur) => ({ ...node, back: cur }))
@@ -102,6 +129,8 @@ export default function Sports({
     return <SportsSearch onBack={back} onOpenTeam={openTeam} onOpenPlayer={openPlayer} onOpenGame={openGame} />
   if (nav.level === 'livenow')
     return <LiveNow onBack={back} onOpenGame={openGame} />
+  if (nav.level === 'news')
+    return <SportsNews onBack={back} />
   if (nav.level === 'mysports')
     return (
       <MySports favTeams={favTeams} reminders={reminders} onBack={back} onOpenGame={openGame}
@@ -127,20 +156,28 @@ export default function Sports({
 
       <div className="hub-chips">
         <button className="gbtn" onClick={() => push({ level: 'livenow' })}>🔴 Live now</button>
+        <button className="gbtn" onClick={() => push({ level: 'news' })}>📰 News</button>
         <button className="gbtn" onClick={() => push({ level: 'mysports' })}>⭐ My Sports</button>
         <button className="gbtn" onClick={() => push({ level: 'search' })}>🔍 Search sports</button>
       </div>
+
+      {pinned.length > 0 && (
+        <div>
+          <div className="section-title">★ Your leagues</div>
+          <div className="league-grid">
+            {pinned.map((k) => LEAGUES.find((l) => l.key === k)).filter(Boolean).map((l) => (
+              <LeagueCard key={l.key} l={l} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {SPORT_CATEGORIES.map((cat) => (
         <div key={cat}>
           <div className="section-title">{cat}</div>
           <div className="league-grid">
             {LEAGUES.filter((l) => l.sport === cat).map((l) => (
-              <button key={l.key} className="league-card" onClick={() => push({ level: 'league', league: l })}>
-                <span className="lc-emoji">{l.emoji}</span>
-                <span className="lc-name">{l.name}</span>
-                <span className="lc-sport">{l.sport}</span>
-              </button>
+              <LeagueCard key={l.key} l={l} />
             ))}
           </div>
         </div>

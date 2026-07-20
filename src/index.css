@@ -1798,6 +1798,151 @@ button {
   color: #fff;
 }
 
+/* ---------- League pin ---------- */
+.league-card-wrap {
+  position: relative;
+}
+.lc-pin {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text-dimmer);
+  font-size: 14px;
+  line-height: 1;
+}
+.lc-pin:hover {
+  background: var(--bg-hover);
+  color: #fff;
+}
+.lc-pin.on {
+  color: #f5c518;
+}
+
+/* ---------- Sports news ---------- */
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  padding: 6px 0 30px;
+}
+.news-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text);
+}
+.news-card:hover {
+  background: var(--bg-elev-2);
+}
+.news-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-elev-2);
+}
+.news-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.news-cat {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.news-body {
+  padding: 12px 14px;
+}
+.news-headline {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.news-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.news-meta {
+  font-size: 12px;
+  color: var(--text-dimmer);
+  margin-top: 8px;
+}
+
+/* ---------- Gameday weather ---------- */
+.weather-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(120deg, #14233a, #1b1b1b 70%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 4px 0 14px;
+}
+.wx-emoji {
+  font-size: 34px;
+}
+.wx-main {
+  flex: 1;
+}
+.wx-temp {
+  font-size: 17px;
+  font-weight: 700;
+}
+.wx-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.wx-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dimmer);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ---------- Head-to-head ---------- */
+.h2h-summary {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 12px 0 18px;
+}
+.h2h-side {
+  text-align: center;
+}
+.h2h-side b {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+}
+.h2h-side span {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.h2h-side.draw b {
+  color: var(--text-dim);
+}
+
 /* ---------- VOD / On Demand ---------- */
 .vod-grid {
   display: grid;

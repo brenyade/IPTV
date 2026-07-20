@@ -73,13 +73,19 @@ https://iptv-org.github.io/iptv/categories/news.m3u
   - **Xtream Codes** — pulled automatically from the panel's `xmltv.php`.
   Channels with no EPG fall back to a stable synthesized schedule so the grid is never
   empty.
-- **Sports** — a full sports hub built on a free public API
-  ([TheSportsDB](https://www.thesportsdb.com/)):
-  - **28 leagues across 10 sports**, grouped by sport — Soccer (EPL, La Liga,
-    Bundesliga, Serie A, Ligue 1, Champions League, Eredivisie, Primeira, EFL,
-    FA Cup, Liga MX, Brasileirão, MLS), Basketball (NBA, WNBA, G League, ACB),
-    American Football (NFL, NCAA), NHL, MLB, Rugby, Cricket (IPL), Motorsport
-    (F1, F3), UFC and ATP tennis.
+- **Sports** — a full sports hub built on free public APIs
+  ([TheSportsDB](https://www.thesportsdb.com/) for data, [ESPN](https://www.espn.com/)
+  for news, [Open-Meteo](https://open-meteo.com/) for weather):
+  - **64 leagues across 14 sports**, grouped by sport and browsable — Soccer (EPL,
+    La Liga, Bundesliga, Serie A, Ligue 1, UCL, Europa, and many more incl. Süper
+    Lig, Belgian, Greek, A-League, Liga MX, Brasileirão, MLS, World Cup),
+    Basketball (NBA, WNBA, EuroLeague…), NFL/NCAA/CFL, NHL, MLB/NPB/KBO, Rugby
+    (incl. Six Nations, NRL), Cricket (IPL, Big Bash), Motorsport (F1, MotoGP,
+    NASCAR…), Tennis (ATP/WTA), Golf (PGA/DP World), Handball, AFL, UFC and more.
+  - **Pin leagues** to a "Your leagues" row for quick access.
+  - **Sports news** — a headline feed (ESPN) across the major leagues.
+  - **Gameday weather** — Open-Meteo forecast for the venue at kickoff.
+  - **Head-to-head** tab — recent meetings and the series record between two teams.
   - Pick a sport → **all its games** (browse by day) → click a game → the **channels
     airing it** (matched from your EPG by team names, with a sport‑based fallback) plus
     **live stats** (score, status, venue, badges) from the API.

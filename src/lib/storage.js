@@ -6,6 +6,7 @@ const FAV = 'iptv.favorites.v1'
 const RECENT = 'iptv.recents.v1'
 const FAVTEAMS = 'iptv.favteams.v1'
 const REMINDERS = 'iptv.reminders.v1'
+const PINNED_LEAGUES = 'iptv.pinnedleagues.v1'
 
 export function loadSources() {
   try {
@@ -51,6 +52,18 @@ export function loadReminders() {
 }
 export function saveReminders(list) {
   localStorage.setItem(REMINDERS, JSON.stringify(list))
+}
+
+// Pinned league keys (strings).
+export function loadPinnedLeagues() {
+  try {
+    return JSON.parse(localStorage.getItem(PINNED_LEAGUES) || '[]')
+  } catch {
+    return []
+  }
+}
+export function savePinnedLeagues(keys) {
+  localStorage.setItem(PINNED_LEAGUES, JSON.stringify(keys))
 }
 
 export function loadRecents() {
