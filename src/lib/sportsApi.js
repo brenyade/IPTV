@@ -299,6 +299,11 @@ export function normalizeTeam(t) {
   }
 }
 
+export async function leagueBadge(id) {
+  const d = await get(`/lookupleague.php?id=${id}`)
+  return d.leagues?.[0]?.strBadge || ''
+}
+
 export async function lookupTeamFull(id) {
   const d = await get(`/lookupteam.php?id=${id}`)
   return normalizeTeam(d.teams?.[0])

@@ -1,10 +1,12 @@
-import { useMemo, useRef, useState, useEffect } from 'react'
+import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { PX_PER_MIN, SLOT_MIN, floorToSlot, buildSchedule } from '../lib/guide.js'
 import { useEpg } from '../lib/epgContext.js'
 import { ChLogo } from './ChannelCard.jsx'
 
 const HOURS_AHEAD = 12
 const HOURS_BEHIND = 1
+const ROW_H = 76 // keep in sync with --guide-row
+const BUFFER = 6 // rows rendered above/below the viewport
 
 function fmtTime(d) {
   return new Date(d).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
@@ -12,10 +14,11 @@ function fmtTime(d) {
 
 export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPlay }) {
   const [now, setNow] = useState(Date.now())
+  const [scrollTop, setScrollTop] = useState(0)
+  const [viewportH, setViewportH] = useState(800)
   const scrollRef = useRef(null)
   const epg = useEpg()
 
-  // Tick the "now" line every 30s.
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000)
     return () => clearInterval(t)
@@ -23,8 +26,7 @@ export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPl
 
   const windowStart = useMemo(() => floorToSlot(now - HOURS_BEHIND * 3600 * 1000).getTime(), [now])
   const windowEnd = windowStart + (HOURS_AHEAD + HOURS_BEHIND) * 3600 * 1000
-  const totalMin = (windowEnd - windowStart) / 60000
-  const gridWidth = totalMin * PX_PER_MIN
+  const gridWidth = ((windowEnd - windowStart) / 60000) * PX_PER_MIN
 
   const timeLabels = useMemo(() => {
     const labels = []
@@ -36,40 +38,60 @@ export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPl
 
   const nowLeft = ((now - windowStart) / 60000) * PX_PER_MIN
 
-  // Scroll so "now" is near the left on first mount.
+  // Measure the scroll viewport; scroll horizontally to "now" on first mount.
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollLeft = Math.max(0, nowLeft - 40)
+    const el = scrollRef.current
+    if (!el) return
+    setViewportH(el.clientHeight || 800)
+    el.scrollLeft = Math.max(0, nowLeft - 40)
+    const onResize = () => setViewportH(el.clientHeight || 800)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const rows = useMemo(
-    () =>
-      channels.map((ch) => ({
-        ch,
-        progs: buildSchedule(ch, windowStart, windowEnd, epg)
-      })),
-    [channels, windowStart, windowEnd, epg]
-  )
+  // Reset vertical scroll when the channel set changes (e.g. category filter).
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0
+    setScrollTop(0)
+  }, [channels])
+
+  const onScroll = useCallback((e) => setScrollTop(e.currentTarget.scrollTop), [])
+
+  // ---- Row virtualization ---------------------------------------------------
+  const total = channels.length
+  const start = Math.max(0, Math.floor(scrollTop / ROW_H) - BUFFER)
+  const visibleCount = Math.ceil(viewportH / ROW_H) + BUFFER * 2
+  const end = Math.min(total, start + visibleCount)
+  const topPad = start * ROW_H
+  const bottomPad = Math.max(0, (total - end) * ROW_H)
+
+  const visibleRows = useMemo(() => {
+    const out = []
+    for (let i = start; i < end; i++) {
+      const ch = channels[i]
+      out.push({ ch, progs: buildSchedule(ch, windowStart, windowEnd, epg) })
+    }
+    return out
+  }, [channels, start, end, windowStart, windowEnd, epg])
 
   return (
     <div className="guide">
       <div className="guide-filters">
         {['All', ...groups].map((g) => (
-          <button
-            key={g}
-            className={'chip' + (activeGroup === g ? ' active' : '')}
-            onClick={() => onGroup(g)}
-          >
+          <button key={g} className={'chip' + (activeGroup === g ? ' active' : '')} onClick={() => onGroup(g)}>
             {g}
           </button>
         ))}
       </div>
 
-      <div className="guide-scroll" ref={scrollRef}>
+      <div className="guide-scroll" ref={scrollRef} onScroll={onScroll}>
         <div className="guide-inner" style={{ width: `calc(var(--guide-rail) + ${gridWidth}px)` }}>
           {/* time header */}
           <div className="guide-timerow">
-            <div className="corner">{new Date(now).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</div>
+            <div className="corner">
+              {new Date(now).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+            </div>
             <div className="time-labels" style={{ width: gridWidth }}>
               {timeLabels.map((l) => (
                 <div key={l.t} className="time-label" style={{ left: l.left, width: SLOT_MIN * PX_PER_MIN }}>
@@ -79,13 +101,11 @@ export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPl
             </div>
           </div>
 
-          {/* now line spanning all rows */}
-          {nowLeft >= 0 && (
-            <div className="nowline" style={{ left: `calc(var(--guide-rail) + ${nowLeft}px)` }} />
-          )}
+          {nowLeft >= 0 && <div className="nowline" style={{ left: `calc(var(--guide-rail) + ${nowLeft}px)` }} />}
 
-          {/* channel rows */}
-          {rows.map(({ ch, progs }) => (
+          {/* virtualized channel rows */}
+          {topPad > 0 && <div style={{ height: topPad }} />}
+          {visibleRows.map(({ ch, progs }) => (
             <div className="guide-row" key={ch.id}>
               <div className="guide-railcell" onClick={() => onPlay(ch)} title={ch.name}>
                 <ChLogo channel={ch} className="rail-logo" />
@@ -120,6 +140,7 @@ export default function LiveGuide({ channels, groups, activeGroup, onGroup, onPl
               </div>
             </div>
           ))}
+          {bottomPad > 0 && <div style={{ height: bottomPad }} />}
         </div>
       </div>
     </div>

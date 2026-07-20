@@ -85,6 +85,7 @@ https://iptv-org.github.io/iptv/categories/news.m3u
     T20 Blast, County Championship**), Motorsport (F1, MotoGP, NASCAR, **IndyCar,
     IMSA, Supercross**), Tennis (ATP/WTA), Golf (PGA/DP World), Handball, AFL, UFC,
     plus **Volleyball, Darts and Netball**.
+  - Real **league crests/logos** on every card (lazy-loaded and cached).
   - **Pin leagues** to a "Your leagues" row for quick access.
   - **Sports news** — a headline feed (ESPN) across the major leagues.
   - **Gameday weather** — Open-Meteo forecast for the venue at kickoff.
@@ -136,6 +137,14 @@ https://iptv-org.github.io/iptv/categories/news.m3u
 React + Vite frontend · Express proxy backend · hls.js · mpegts.js. Sports data from
 the free [TheSportsDB](https://www.thesportsdb.com/) API (proxied). No accounts,
 no database, no telemetry.
+
+## Performance
+
+The Live Guide is **row-virtualized**, so very large playlists (tested with
+iptv-org's full ~13,000-channel index) load in a few seconds and stay smooth —
+only the rows in view are rendered. Uploaded playlist files are kept for the
+session (not written to `localStorage`) so large uploads never hit the storage
+quota.
 
 ## Notes / limitations
 

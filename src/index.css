@@ -756,6 +756,16 @@ button {
 .lc-emoji {
   font-size: 30px;
 }
+.lc-badge {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.league-head-badge {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
 .lc-name {
   font-size: 17px;
   font-weight: 700;

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { gamesOnDate, leagueTable } from '../lib/sportsApi.js'
+import { useLeagueBadge } from '../lib/leagueBadges.js'
 import { Back } from './Icons.jsx'
 
 function dstr(offsetDays) {
@@ -53,6 +54,7 @@ function GameRow({ g, onOpen }) {
 }
 
 export default function LeagueView({ league, onOpenGame, onBack }) {
+  const badge = useLeagueBadge(league.id)
   const [offset, setOffset] = useState(0)
   const [tab, setTab] = useState('games') // games | standings
   const [games, setGames] = useState(null)
@@ -88,7 +90,7 @@ export default function LeagueView({ league, onOpenGame, onBack }) {
       </button>
 
       <div className="league-head">
-        <span className="league-emoji">{league.emoji}</span>
+        {badge ? <img className="league-head-badge" src={badge} alt="" /> : <span className="league-emoji">{league.emoji}</span>}
         <h1>{league.name}</h1>
         <span className="league-sport">{league.sport}</span>
       </div>

@@ -36,9 +36,10 @@ app.get('/api/fetch', async (req, res) => {
   const target = req.query.url
   if (!target) return res.status(400).json({ error: 'Missing url' })
   try {
+    // Big playlists can be tens of MB and slow — allow up to 90s.
     const r = await fetchWithTimeout(target, {
       headers: { 'User-Agent': UA, Accept: '*/*' }
-    })
+    }, 90000)
     if (!r.ok) return res.status(r.status).json({ error: `Upstream ${r.status}` })
     const text = await r.text()
     res.type('text/plain').send(text)
@@ -52,9 +53,10 @@ app.get('/api/json', async (req, res) => {
   const target = req.query.url
   if (!target) return res.status(400).json({ error: 'Missing url' })
   try {
+    // Xtream get_live_streams can be large; allow up to 90s.
     const r = await fetchWithTimeout(target, {
       headers: { 'User-Agent': UA, Accept: 'application/json,*/*' }
-    })
+    }, 90000)
     const text = await r.text()
     if (!r.ok) return res.status(r.status).json({ error: `Upstream ${r.status}`, body: text.slice(0, 300) })
     try {

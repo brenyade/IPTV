@@ -16,7 +16,17 @@ export function loadSources() {
   }
 }
 export function saveSources(list) {
-  localStorage.setItem(KEY, JSON.stringify(list))
+  // Uploaded (text) playlists are session-only: we can't re-fetch them on reload
+  // and their content is far too big for localStorage, so we don't persist them.
+  const slim = list
+    .filter((s) => s.type === 'xtream' || s.url)
+    .map(({ text, ...rest }) => rest)
+  try {
+    localStorage.setItem(KEY, JSON.stringify(slim))
+  } catch (e) {
+    // Quota exceeded or storage unavailable — keep running without persistence.
+    console.warn('Could not persist sources:', e?.message || e)
+  }
 }
 
 export function loadFavorites() {

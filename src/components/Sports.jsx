@@ -13,8 +13,15 @@ import SportsNews from './SportsNews.jsx'
 import { useEpg } from '../lib/epgContext.js'
 import { isSportsText, programmeAt, programmeIsSports } from '../lib/epg.js'
 import { LEAGUES, SPORT_CATEGORIES, teamNextGames } from '../lib/sportsApi.js'
+import { useLeagueBadge } from '../lib/leagueBadges.js'
 import { loadPinnedLeagues, savePinnedLeagues } from '../lib/storage.js'
 import { Back } from './Icons.jsx'
+
+function LeagueBadge({ league }) {
+  const url = useLeagueBadge(league.id)
+  if (url) return <img className="lc-badge" src={url} alt="" loading="lazy" />
+  return <span className="lc-emoji">{league.emoji}</span>
+}
 
 function useSportsChannels(channels, epg) {
   return useMemo(() => {
@@ -65,7 +72,7 @@ export default function Sports({
   const LeagueCard = ({ l }) => (
     <div className="league-card-wrap">
       <button className="league-card" onClick={() => push({ level: 'league', league: l })}>
-        <span className="lc-emoji">{l.emoji}</span>
+        <LeagueBadge league={l} />
         <span className="lc-name">{l.name}</span>
         <span className="lc-sport">{l.sport}</span>
       </button>
