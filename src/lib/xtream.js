@@ -81,8 +81,54 @@ export async function loadXtreamVod(account) {
     name: s.name || `Movie ${s.stream_id}`,
     logo: s.stream_icon || '',
     group: catName[s.category_id] || 'Movies',
+    rating: s.rating,
     kind: 'vod',
     accountId: account.id,
     url: vodUrl(account, s.stream_id, s.container_extension)
   }))
+}
+
+// Series list (metadata only; episodes are fetched on demand per series).
+export async function loadXtreamSeries(account) {
+  const [cats, series] = await Promise.all([
+    fetchJson(apiUrl(account, { action: 'get_series_categories' })).catch(() => []),
+    fetchJson(apiUrl(account, { action: 'get_series' })).catch(() => [])
+  ])
+  const catName = {}
+  for (const c of cats || []) catName[c.category_id] = c.category_name
+  return (series || []).map((s) => ({
+    id: `xts_${account.id}_${s.series_id}`,
+    seriesId: s.series_id,
+    name: s.name || `Series ${s.series_id}`,
+    logo: s.cover || '',
+    group: catName[s.category_id] || 'Series',
+    plot: s.plot,
+    rating: s.rating,
+    kind: 'series',
+    accountId: account.id
+  }))
+}
+
+// Seasons + episodes for one series.
+export async function getSeriesInfo(account, seriesId) {
+  const data = await fetchJson(apiUrl(account, { action: 'get_series_info', series_id: seriesId }))
+  const epsBySeason = data?.episodes || {}
+  const seasons = Object.keys(epsBySeason)
+    .sort((a, b) => Number(a) - Number(b))
+    .map((seasonNum) => ({
+      season: seasonNum,
+      episodes: (epsBySeason[seasonNum] || []).map((e) => ({
+        id: `xte_${account.id}_${e.id}`,
+        episodeId: e.id,
+        num: e.episode_num,
+        name: e.title || `Episode ${e.episode_num}`,
+        logo: e.info?.movie_image || data?.info?.cover || '',
+        plot: e.info?.plot,
+        duration: e.info?.duration,
+        kind: 'vod',
+        accountId: account.id,
+        url: seriesUrl(account, e.id, e.container_extension)
+      }))
+    }))
+  return { info: data?.info || {}, seasons }
 }

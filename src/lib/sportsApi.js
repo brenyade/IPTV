@@ -7,15 +7,53 @@ import { fetchJson } from './api.js'
 const KEY = '3' // free public key
 const BASE = `https://www.thesportsdb.com/api/v1/json/${KEY}`
 
-// The "major sports" hub. idLeague values are TheSportsDB league ids.
+// The sports hub leagues. idLeague values are verified TheSportsDB league ids.
 export const LEAGUES = [
+  // Soccer
+  { key: 'epl', name: 'Premier League', sport: 'Soccer', id: '4328', emoji: '🏴', season: '2025-2026' },
+  { key: 'laliga', name: 'La Liga', sport: 'Soccer', id: '4335', emoji: '🇪🇸', season: '2025-2026' },
+  { key: 'bundesliga', name: 'Bundesliga', sport: 'Soccer', id: '4331', emoji: '🇩🇪', season: '2025-2026' },
+  { key: 'seriea', name: 'Serie A', sport: 'Soccer', id: '4332', emoji: '🇮🇹', season: '2025-2026' },
+  { key: 'ligue1', name: 'Ligue 1', sport: 'Soccer', id: '4334', emoji: '🇫🇷', season: '2025-2026' },
+  { key: 'ucl', name: 'Champions League', sport: 'Soccer', id: '4480', emoji: '⭐', season: '2025-2026' },
+  { key: 'eredivisie', name: 'Eredivisie', sport: 'Soccer', id: '4337', emoji: '🇳🇱', season: '2025-2026' },
+  { key: 'primeira', name: 'Primeira Liga', sport: 'Soccer', id: '4344', emoji: '🇵🇹', season: '2025-2026' },
+  { key: 'championship', name: 'EFL Championship', sport: 'Soccer', id: '4329', emoji: '🏴', season: '2025-2026' },
+  { key: 'facup', name: 'FA Cup', sport: 'Soccer', id: '4482', emoji: '🏆', season: '2025-2026' },
+  { key: 'ligamx', name: 'Liga MX', sport: 'Soccer', id: '4350', emoji: '🇲🇽', season: '2026' },
+  { key: 'brasil', name: 'Brasileirão', sport: 'Soccer', id: '4351', emoji: '🇧🇷', season: '2026' },
+  { key: 'mls', name: 'MLS', sport: 'Soccer', id: '4346', emoji: '🥅', season: '2026' },
+  // Basketball
   { key: 'nba', name: 'NBA', sport: 'Basketball', id: '4387', emoji: '🏀', season: '2025-2026' },
+  { key: 'wnba', name: 'WNBA', sport: 'Basketball', id: '4516', emoji: '🏀', season: '2026' },
+  { key: 'gleague', name: 'NBA G League', sport: 'Basketball', id: '4388', emoji: '🏀', season: '2025-2026' },
+  { key: 'acb', name: 'Liga ACB', sport: 'Basketball', id: '4408', emoji: '🏀', season: '2025-2026' },
+  // American Football
   { key: 'nfl', name: 'NFL', sport: 'American Football', id: '4391', emoji: '🏈', season: '2025-2026' },
+  { key: 'ncaaf', name: 'NCAA Football', sport: 'American Football', id: '4479', emoji: '🏈', season: '2025-2026' },
+  // Ice Hockey
   { key: 'nhl', name: 'NHL', sport: 'Ice Hockey', id: '4380', emoji: '🏒', season: '2025-2026' },
+  // Baseball
   { key: 'mlb', name: 'MLB', sport: 'Baseball', id: '4424', emoji: '⚾', season: '2026' },
-  { key: 'epl', name: 'Premier League', sport: 'Soccer', id: '4328', emoji: '⚽', season: '2025-2026' },
-  { key: 'mls', name: 'MLS', sport: 'Soccer', id: '4346', emoji: '🥅', season: '2026' }
+  // Rugby
+  { key: 'prem-rugby', name: 'Premiership Rugby', sport: 'Rugby', id: '4414', emoji: '🏉', season: '2025-2026' },
+  { key: 'super-rugby', name: 'Super Rugby', sport: 'Rugby', id: '4551', emoji: '🏉', season: '2026' },
+  // Cricket
+  { key: 'ipl', name: 'IPL', sport: 'Cricket', id: '4460', emoji: '🏏', season: '2026' },
+  // Motorsport
+  { key: 'f1', name: 'Formula 1', sport: 'Motorsport', id: '4370', emoji: '🏎️', season: '2026' },
+  { key: 'f3', name: 'Formula 3', sport: 'Motorsport', id: '4487', emoji: '🏎️', season: '2026' },
+  // Combat / Tennis
+  { key: 'ufc', name: 'UFC', sport: 'Fighting', id: '4443', emoji: '🥊', season: '2026' },
+  { key: 'atp', name: 'ATP Tour', sport: 'Tennis', id: '4464', emoji: '🎾', season: '2026' }
 ]
+
+// Distinct sport categories in hub order.
+export const SPORT_CATEGORIES = [...new Set(LEAGUES.map((l) => l.sport))]
+
+// Marquee leagues used for the auto-refreshing ticker / "Live now" aggregation,
+// so we don't fan out a request to every league every minute.
+export const FEATURED_LEAGUE_IDS = ['4328', '4335', '4331', '4332', '4480', '4387', '4391', '4380', '4424', '4346']
 
 export const leagueByKey = (k) => LEAGUES.find((l) => l.key === k)
 export const leagueById = (id) => LEAGUES.find((l) => l.id === String(id))

@@ -7,10 +7,11 @@ classic **Live Guide** channel grid.
 It plays:
 
 - **M3U / M3U8** playlists — by URL or by uploading a local `.m3u` / `.m3u8` file
-- **Xtream Codes** panels — server URL + username + password (live streams)
+- **Xtream Codes** panels — live channels **plus Movies & Series (VOD)**
 - HLS (`.m3u8`), MPEG‑TS (`.ts`) live streams, and direct media (`.mp4`, etc.)
 
-…with a real **EPG** (program guide) and a dedicated **Sports** section.
+…with a real **EPG** (program guide), a deep **Sports** section (28 leagues), an
+**On Demand** library, live **recording**, and a full‑featured player.
 
 ![Live Guide](docs/guide.png)
 ![Sports hub](docs/sports-hub.png)
@@ -74,7 +75,11 @@ https://iptv-org.github.io/iptv/categories/news.m3u
   empty.
 - **Sports** — a full sports hub built on a free public API
   ([TheSportsDB](https://www.thesportsdb.com/)):
-  - **Major sports** grid — NBA, NFL, NHL, MLB, Premier League, MLS.
+  - **28 leagues across 10 sports**, grouped by sport — Soccer (EPL, La Liga,
+    Bundesliga, Serie A, Ligue 1, Champions League, Eredivisie, Primeira, EFL,
+    FA Cup, Liga MX, Brasileirão, MLS), Basketball (NBA, WNBA, G League, ACB),
+    American Football (NFL, NCAA), NHL, MLB, Rugby, Cricket (IPL), Motorsport
+    (F1, F3), UFC and ATP tennis.
   - Pick a sport → **all its games** (browse by day) → click a game → the **channels
     airing it** (matched from your EPG by team names, with a sport‑based fallback) plus
     **live stats** (score, status, venue, badges) from the API.
@@ -105,8 +110,16 @@ https://iptv-org.github.io/iptv/categories/news.m3u
   row per category).
 - **Search** — instant filtering across every channel in every source.
 - **Library** — manage your playlists / accounts and see your favorites.
-- **Player** — full‑screen with HLS.js + mpegts.js, favorite toggle, live pill,
-  loading and graceful error states. `Esc` closes it.
+- **On Demand (VOD)** — Movies and Series from your Xtream account, browsable by
+  category, with season/episode navigation. (Live TV works from M3U or Xtream; VOD
+  requires an Xtream account.)
+- **Recording** — hit ⏺ while watching to record the live stream to a local clip
+  (MediaRecorder). Recordings are saved in **Library → Recordings**, where you can
+  play, download (`.webm`) or delete them; they persist in IndexedDB.
+- **Player** — full‑screen with HLS.js + mpegts.js and a settings menu for
+  **quality**, **playback speed**, **audio tracks** and **subtitles**; plus live
+  **DVR** (rewind / start‑over / jump‑to‑live), **Picture‑in‑Picture**, a floating
+  **mini‑player**, favorite toggle, and keyboard shortcuts (space, f, m, i, ←/→, l).
 - Favorites and "continue watching" history persisted locally.
 
 ## Tech

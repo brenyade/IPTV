@@ -11,7 +11,7 @@ import LiveNow from './LiveNow.jsx'
 import MySports from './MySports.jsx'
 import { useEpg } from '../lib/epgContext.js'
 import { isSportsText, programmeAt, programmeIsSports } from '../lib/epg.js'
-import { LEAGUES, teamNextGames } from '../lib/sportsApi.js'
+import { LEAGUES, SPORT_CATEGORIES, teamNextGames } from '../lib/sportsApi.js'
 import { Back } from './Icons.jsx'
 
 function useSportsChannels(channels, epg) {
@@ -131,16 +131,20 @@ export default function Sports({
         <button className="gbtn" onClick={() => push({ level: 'search' })}>🔍 Search sports</button>
       </div>
 
-      <div className="section-title">Major sports</div>
-      <div className="league-grid">
-        {LEAGUES.map((l) => (
-          <button key={l.key} className="league-card" onClick={() => push({ level: 'league', league: l })}>
-            <span className="lc-emoji">{l.emoji}</span>
-            <span className="lc-name">{l.name}</span>
-            <span className="lc-sport">{l.sport}</span>
-          </button>
-        ))}
-      </div>
+      {SPORT_CATEGORIES.map((cat) => (
+        <div key={cat}>
+          <div className="section-title">{cat}</div>
+          <div className="league-grid">
+            {LEAGUES.filter((l) => l.sport === cat).map((l) => (
+              <button key={l.key} className="league-card" onClick={() => push({ level: 'league', league: l })}>
+                <span className="lc-emoji">{l.emoji}</span>
+                <span className="lc-name">{l.name}</span>
+                <span className="lc-sport">{l.sport}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
 
       {teamGames.length > 0 && (
         <section className="shelf">

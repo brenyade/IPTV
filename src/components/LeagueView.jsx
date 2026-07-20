@@ -31,18 +31,22 @@ function GameRow({ g, onOpen }) {
         {g.state === 'live' && <span className="livedot">● </span>}
         {time}
       </span>
-      <span className="grow-teams">
-        <span className="grow-team">
-          {g.awayBadge && <img src={g.awayBadge} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />}
-          {g.away}
-          {g.state !== 'upcoming' && <b className="grow-score">{g.awayScore ?? 0}</b>}
+      {g.home || g.away ? (
+        <span className="grow-teams">
+          <span className="grow-team">
+            {g.awayBadge && <img src={g.awayBadge} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+            {g.away}
+            {g.state !== 'upcoming' && <b className="grow-score">{g.awayScore ?? 0}</b>}
+          </span>
+          <span className="grow-team">
+            {g.homeBadge && <img src={g.homeBadge} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />}
+            {g.home}
+            {g.state !== 'upcoming' && <b className="grow-score">{g.homeScore ?? 0}</b>}
+          </span>
         </span>
-        <span className="grow-team">
-          {g.homeBadge && <img src={g.homeBadge} alt="" onError={(e) => (e.currentTarget.style.display = 'none')} />}
-          {g.home}
-          {g.state !== 'upcoming' && <b className="grow-score">{g.homeScore ?? 0}</b>}
-        </span>
-      </span>
+      ) : (
+        <span className="grow-teams"><span className="grow-team">{g.name}</span></span>
+      )}
       <span className="grow-go">›</span>
     </button>
   )

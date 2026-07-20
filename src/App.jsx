@@ -9,6 +9,7 @@ import Player from './components/Player.jsx'
 import Sports from './components/Sports.jsx'
 import MultiView from './components/MultiView.jsx'
 import MiniPlayer from './components/MiniPlayer.jsx'
+import VOD from './components/VOD.jsx'
 
 import { fetchText, fetchEpg } from './lib/api.js'
 import { parseM3U, extractEpgUrl } from './lib/m3uParser.js'
@@ -48,6 +49,7 @@ export default function App() {
   const [miniChannel, setMiniChannel] = useState(null) // floating mini-player
   const [toast, setToast] = useState(null)
   const [sportsKey, setSportsKey] = useState(0) // bump to reset Sports to its hub
+  const [recVersion, setRecVersion] = useState(0) // bump to refresh recordings list
 
   // Clicking a tab resets that section to its root (YouTube TV behavior).
   const handleView = useCallback(
@@ -293,6 +295,7 @@ export default function App() {
     }
 
     if (view === 'search') return <SearchView channels={channels} query={query} onPlay={play} />
+    if (view === 'ondemand') return <VOD sources={sources} onPlay={play} />
     if (view === 'sports')
       return (
         <Sports
@@ -325,6 +328,7 @@ export default function App() {
           onPlay={play}
           onAdd={() => setShowAdd(true)}
           onRemoveSource={removeSource}
+          recVersion={recVersion}
         />
       )
     // default: live guide
@@ -362,6 +366,10 @@ export default function App() {
             }}
             isFav={favorites.includes(playing.id)}
             onToggleFav={toggleFav}
+            onRecordingSaved={(meta) => {
+              setRecVersion((v) => v + 1)
+              setToast({ text: `⏺ Saved recording: ${meta.name}` })
+            }}
           />
         )}
         {miniChannel && !playing && (

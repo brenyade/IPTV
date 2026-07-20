@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import ChannelCard from './ChannelCard.jsx'
+import Recordings from './Recordings.jsx'
 
-export default function Library({ sources, channels, favorites, onPlay, onAdd, onRemoveSource }) {
+export default function Library({ sources, channels, favorites, onPlay, onAdd, onRemoveSource, recVersion }) {
   const favChannels = useMemo(
     () => favorites.map((id) => channels.find((c) => c.id === id)).filter(Boolean),
     [favorites, channels]
@@ -45,6 +46,9 @@ export default function Library({ sources, channels, favorites, onPlay, onAdd, o
           </button>
         </div>
       </div>
+
+      <div className="section-title">Recordings</div>
+      <Recordings onPlay={onPlay} refreshKey={recVersion} />
 
       <div className="section-title">Favorites</div>
       {favChannels.length ? (

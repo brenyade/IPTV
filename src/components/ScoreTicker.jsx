@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LEAGUES, todayAcross } from '../lib/sportsApi.js'
+import { FEATURED_LEAGUE_IDS, todayAcross } from '../lib/sportsApi.js'
 
 function todayStr() {
   return new Date().toISOString().slice(0, 10)
@@ -12,7 +12,7 @@ export default function ScoreTicker({ onOpenGame }) {
   useEffect(() => {
     let alive = true
     const load = () =>
-      todayAcross(LEAGUES.map((l) => l.id), todayStr())
+      todayAcross(FEATURED_LEAGUE_IDS, todayStr())
         .then((g) => alive && setGames(g))
         .catch(() => {})
     load()

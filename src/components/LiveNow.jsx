@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LEAGUES, liveAcross } from '../lib/sportsApi.js'
+import { FEATURED_LEAGUE_IDS, liveAcross } from '../lib/sportsApi.js'
 import { Back } from './Icons.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
@@ -10,7 +10,7 @@ export default function LiveNow({ onBack, onOpenGame }) {
 
   useEffect(() => {
     let alive = true
-    const load = () => liveAcross(LEAGUES.map((l) => l.id), today()).then((g) => alive && setGames(g)).catch(() => alive && setGames([]))
+    const load = () => liveAcross(FEATURED_LEAGUE_IDS, today()).then((g) => alive && setGames(g)).catch(() => alive && setGames([]))
     load()
     const t = setInterval(load, 30000)
     return () => { alive = false; clearInterval(t) }

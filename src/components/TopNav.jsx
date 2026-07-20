@@ -1,6 +1,12 @@
 import { Search, Plus } from './Icons.jsx'
 
-const TABS = ['Library', 'Home', 'Live', 'Sports']
+const TABS = [
+  { label: 'Library', key: 'library' },
+  { label: 'Home', key: 'home' },
+  { label: 'Live', key: 'live' },
+  { label: 'Sports', key: 'sports' },
+  { label: 'On Demand', key: 'ondemand' }
+]
 
 export default function TopNav({ view, onView, onAdd, query, onQuery }) {
   return (
@@ -12,18 +18,15 @@ export default function TopNav({ view, onView, onAdd, query, onQuery }) {
       </div>
 
       <nav className="nav-tabs">
-        {TABS.map((t) => {
-          const key = t.toLowerCase()
-          return (
-            <button
-              key={t}
-              className={'nav-tab' + (view === key ? ' active' : '')}
-              onClick={() => onView(key)}
-            >
-              {t}
-            </button>
-          )
-        })}
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            className={'nav-tab' + (view === t.key ? ' active' : '')}
+            onClick={() => onView(t.key)}
+          >
+            {t.label}
+          </button>
+        ))}
       </nav>
 
       <div className="nav-spacer" />
