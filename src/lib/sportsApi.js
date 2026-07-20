@@ -86,7 +86,47 @@ export const LEAGUES = [
   // Fighting
   { key: 'ufc', name: 'UFC', sport: 'Fighting', id: '4443', emoji: '🥊', season: '2026' },
   // ESports
-  { key: 'fortnite', name: 'Fortnite', sport: 'ESports', id: '4515', emoji: '🎮', season: '2026' }
+  { key: 'fortnite', name: 'Fortnite', sport: 'ESports', id: '4515', emoji: '🎮', season: '2026' },
+
+  // ---- Expansion pack ----
+  // Ice Hockey
+  { key: 'khl', name: 'KHL', sport: 'Ice Hockey', id: '4920', emoji: '🏒', season: '2025-2026' },
+  { key: 'shl', name: 'SHL (Sweden)', sport: 'Ice Hockey', id: '4419', emoji: '🏒', season: '2025-2026' },
+  { key: 'liiga', name: 'Liiga (Finland)', sport: 'Ice Hockey', id: '4931', emoji: '🏒', season: '2025-2026' },
+  { key: 'del', name: 'DEL (Germany)', sport: 'Ice Hockey', id: '4925', emoji: '🏒', season: '2025-2026' },
+  { key: 'swiss-nl', name: 'Swiss National League', sport: 'Ice Hockey', id: '4934', emoji: '🏒', season: '2025-2026' },
+  { key: 'ice-at', name: 'ICE Hockey League', sport: 'Ice Hockey', id: '4933', emoji: '🏒', season: '2025-2026' },
+  // Soccer
+  { key: 'saudi', name: 'Saudi Pro League', sport: 'Soccer', id: '4668', emoji: '🇸🇦', season: '2025-2026' },
+  { key: 'isl', name: 'Indian Super League', sport: 'Soccer', id: '4791', emoji: '🇮🇳', season: '2025-2026' },
+  { key: 'j1', name: 'J1 League', sport: 'Soccer', id: '4633', emoji: '🇯🇵', season: '2026' },
+  { key: 'kleague', name: 'K League 1', sport: 'Soccer', id: '4689', emoji: '🇰🇷', season: '2026' },
+  { key: 'danish', name: 'Danish Superliga', sport: 'Soccer', id: '4340', emoji: '🇩🇰', season: '2025-2026' },
+  { key: 'scotprem', name: 'Scottish Premiership', sport: 'Soccer', id: '4330', emoji: '🏴', season: '2025-2026' },
+  { key: 'scotchamp', name: 'Scottish Championship', sport: 'Soccer', id: '4395', emoji: '🏴', season: '2025-2026' },
+  { key: 'laliga2', name: 'La Liga 2', sport: 'Soccer', id: '4400', emoji: '🇪🇸', season: '2025-2026' },
+  // Basketball
+  { key: 'bsl', name: 'Turkish BSL', sport: 'Basketball', id: '4475', emoji: '🏀', season: '2025-2026' },
+  { key: 'greek-basket', name: 'Greek Basket League', sport: 'Basketball', id: '4452', emoji: '🏀', season: '2025-2026' },
+  { key: 'lega', name: 'Italian Lega Basket', sport: 'Basketball', id: '4433', emoji: '🏀', season: '2025-2026' },
+  { key: 'lnb', name: 'French LNB', sport: 'Basketball', id: '4423', emoji: '🏀', season: '2025-2026' },
+  // Cricket
+  { key: 't20blast', name: 'T20 Blast', sport: 'Cricket', id: '4463', emoji: '🏏', season: '2026' },
+  { key: 'psl', name: 'Pakistan Super League', sport: 'Cricket', id: '5067', emoji: '🏏', season: '2026' },
+  { key: 'sa20', name: 'SA20', sport: 'Cricket', id: '5532', emoji: '🏏', season: '2026' },
+  { key: 'county', name: 'County Championship', sport: 'Cricket', id: '4458', emoji: '🏏', season: '2026' },
+  // Rugby
+  { key: 'top14', name: 'Top 14', sport: 'Rugby', id: '4430', emoji: '🏉', season: '2025-2026' },
+  { key: 'champions-cup', name: 'Champions Cup', sport: 'Rugby', id: '4550', emoji: '🏉', season: '2025-2026' },
+  { key: 'sl-rugby', name: 'Super League (RL)', sport: 'Rugby', id: '4415', emoji: '🏉', season: '2026' },
+  // Motorsport
+  { key: 'indycar', name: 'IndyCar', sport: 'Motorsport', id: '4373', emoji: '🏎️', season: '2026' },
+  { key: 'supercross', name: 'AMA Supercross', sport: 'Motorsport', id: '4468', emoji: '🏍️', season: '2026' },
+  { key: 'imsa', name: 'IMSA SportsCar', sport: 'Motorsport', id: '4488', emoji: '🏁', season: '2026' },
+  // New sports
+  { key: 'volley-it', name: 'Italian Volleyball League', sport: 'Volleyball', id: '4544', emoji: '🏐', season: '2025-2026' },
+  { key: 'darts-bdo', name: 'BDO Darts', sport: 'Darts', id: '4561', emoji: '🎯', season: '2026' },
+  { key: 'netball', name: 'Constellation Cup', sport: 'Netball', id: '5793', emoji: '🏐', season: '2026' }
 ]
 
 // Distinct sport categories in hub order.

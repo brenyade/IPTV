@@ -76,12 +76,15 @@ https://iptv-org.github.io/iptv/categories/news.m3u
 - **Sports** — a full sports hub built on free public APIs
   ([TheSportsDB](https://www.thesportsdb.com/) for data, [ESPN](https://www.espn.com/)
   for news, [Open-Meteo](https://open-meteo.com/) for weather):
-  - **64 leagues across 14 sports**, grouped by sport and browsable — Soccer (EPL,
-    La Liga, Bundesliga, Serie A, Ligue 1, UCL, Europa, and many more incl. Süper
-    Lig, Belgian, Greek, A-League, Liga MX, Brasileirão, MLS, World Cup),
-    Basketball (NBA, WNBA, EuroLeague…), NFL/NCAA/CFL, NHL, MLB/NPB/KBO, Rugby
-    (incl. Six Nations, NRL), Cricket (IPL, Big Bash), Motorsport (F1, MotoGP,
-    NASCAR…), Tennis (ATP/WTA), Golf (PGA/DP World), Handball, AFL, UFC and more.
+  - **95 leagues across 17 sports**, grouped by sport and browsable — Soccer (EPL,
+    La Liga, Bundesliga, Serie A, Ligue 1, UCL/Europa, plus Saudi Pro League, J1,
+    K League, Indian Super League, Danish, Scottish, and more), Basketball (NBA,
+    WNBA, EuroLeague, Turkish/Greek/Italian/French…), NFL/NCAA/CFL, Ice Hockey
+    (NHL, **KHL, SHL, Liiga, DEL, Swiss NL**), MLB/NPB/KBO, Rugby (Six Nations, NRL,
+    **Top 14, Champions Cup, Super League**), Cricket (IPL, Big Bash, **PSL, SA20,
+    T20 Blast, County Championship**), Motorsport (F1, MotoGP, NASCAR, **IndyCar,
+    IMSA, Supercross**), Tennis (ATP/WTA), Golf (PGA/DP World), Handball, AFL, UFC,
+    plus **Volleyball, Darts and Netball**.
   - **Pin leagues** to a "Your leagues" row for quick access.
   - **Sports news** — a headline feed (ESPN) across the major leagues.
   - **Gameday weather** — Open-Meteo forecast for the venue at kickoff.
