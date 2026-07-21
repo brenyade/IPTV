@@ -55,6 +55,7 @@ function GameRow({ g, onOpen }) {
 
 export default function LeagueView({ league, onOpenGame, onBack }) {
   const badge = useLeagueBadge(league.id)
+  const [badgeFailed, setBadgeFailed] = useState(false)
   const [offset, setOffset] = useState(0)
   const [tab, setTab] = useState('games') // games | standings
   const [games, setGames] = useState(null)
@@ -90,7 +91,11 @@ export default function LeagueView({ league, onOpenGame, onBack }) {
       </button>
 
       <div className="league-head">
-        {badge ? <img className="league-head-badge" src={badge} alt="" /> : <span className="league-emoji">{league.emoji}</span>}
+        {badge && !badgeFailed ? (
+          <img className="league-head-badge" src={badge} alt="" onError={() => setBadgeFailed(true)} />
+        ) : (
+          <span className="league-emoji">{league.emoji}</span>
+        )}
         <h1>{league.name}</h1>
         <span className="league-sport">{league.sport}</span>
       </div>

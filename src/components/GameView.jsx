@@ -6,9 +6,11 @@ import {
   teamForm,
   lineup as fetchLineup,
   eventStats as fetchStats,
-  timeline as fetchTimeline
+  timeline as fetchTimeline,
+  eventBroadcasters,
+  countryFlag
 } from '../lib/sportsApi.js'
-import { channelsForGame, likelyChannels } from '../lib/gameMatch.js'
+import { channelsForGame, likelyChannels, matchBroadcasterChannels } from '../lib/gameMatch.js'
 import { geocode, forecastAt } from '../lib/weather.js'
 import { downloadIcs } from '../lib/ics.js'
 import { ChLogo } from './ChannelCard.jsx'
@@ -79,6 +81,7 @@ export default function GameView({
   const [lineups, setLineups] = useState(null)
   const [tl, setTl] = useState(null)
   const [weather, setWeather] = useState(null)
+  const [broadcasters, setBroadcasters] = useState(null)
 
   // Refresh event + teams + form on open.
   useEffect(() => {
@@ -115,6 +118,13 @@ export default function GameView({
       fetchLineup(game.id).then(setLineups).catch(() => setLineups({ home: [], away: [] }))
     if (tab === 'timeline' && tl === null) fetchTimeline(game.id).then(setTl).catch(() => setTl([]))
   }, [tab, game.id, stats, lineups, tl])
+
+  // Real TV broadcasters for this game (ESPN, TSN, Sky Sports…).
+  useEffect(() => {
+    let alive = true
+    eventBroadcasters(initial.id).then((b) => alive && setBroadcasters(b)).catch(() => alive && setBroadcasters([]))
+    return () => { alive = false }
+  }, [initial.id])
 
   // Gameday weather: geocode the home venue/city, forecast for kickoff.
   useEffect(() => {
@@ -242,29 +252,68 @@ export default function GameView({
             </div>
           )}
 
-          <div className="section-title" style={{ paddingLeft: 0 }}>
-            {matched.length ? 'Airing now on your channels' : 'Sports channels that may carry this'}
-          </div>
-          {watchChannels.length === 0 ? (
-            <div className="source-sub">No matching channels found in your sources.</div>
-          ) : (
+          {/* Real broadcasters for this game */}
+          <div className="section-title" style={{ paddingLeft: 0 }}>📺 Where to watch</div>
+          {broadcasters === null ? (
+            <div className="empty" style={{ height: 90 }}><div className="spinner" /></div>
+          ) : broadcasters.length > 0 ? (
             <div className="watch-list">
-              {watchChannels.map((ch) => {
-                const m = matched.find((x) => x.channel.id === ch.id)
+              {broadcasters.map((b, i) => {
+                const mine = matchBroadcasterChannels(b.channel, channels)
                 return (
-                  <div className="watch-item" key={ch.id} onClick={() => onPlay(ch)}>
-                    <ChLogo channel={ch} className="watch-logo" />
+                  <div className={'watch-item' + (mine.length ? '' : ' no-play')} key={i}
+                    onClick={mine.length ? () => onPlay(mine[0]) : undefined}>
+                    {b.logo ? <img className="watch-logo" src={b.logo} alt="" onError={(e) => (e.currentTarget.style.visibility = 'hidden')} />
+                      : <div className="watch-logo placeholder">{countryFlag(b.country)}</div>}
                     <div className="watch-main">
-                      <div className="watch-name">{ch.name}</div>
-                      <div className="watch-sub">{m ? m.programme.title : ch.group || 'Sports'}</div>
+                      <div className="watch-name">{b.channel}</div>
+                      <div className="watch-sub">
+                        {countryFlag(b.country)} {b.country || 'Broadcast'}
+                        {mine.length ? ` · in your playlist` : ''}
+                      </div>
                     </div>
-                    <button className="watch-play" onClick={(e) => { e.stopPropagation(); onPlay(ch) }}>
-                      <Play style={{ width: 16, height: 16 }} /> Watch
-                    </button>
+                    {mine.length ? (
+                      <button className="watch-play" onClick={(e) => { e.stopPropagation(); onPlay(mine[0]) }}>
+                        <Play style={{ width: 16, height: 16 }} /> Watch
+                      </button>
+                    ) : (
+                      <span className="watch-note">not in your channels</span>
+                    )}
                   </div>
                 )
               })}
             </div>
+          ) : (
+            <div className="source-sub">
+              No official broadcast listing found for this game
+              {watchChannels.length ? '. Based on your playlist it may be on:' : '.'}
+            </div>
+          )}
+
+          {/* Fallback: EPG-matched / sport channels from the user's playlist */}
+          {(broadcasters?.length === 0 || matched.length > 0) && watchChannels.length > 0 && (
+            <>
+              <div className="section-title" style={{ paddingLeft: 0 }}>
+                {matched.length ? 'Airing now on your channels' : 'Sports channels in your playlist'}
+              </div>
+              <div className="watch-list">
+                {watchChannels.map((ch) => {
+                  const m = matched.find((x) => x.channel.id === ch.id)
+                  return (
+                    <div className="watch-item" key={ch.id} onClick={() => onPlay(ch)}>
+                      <ChLogo channel={ch} className="watch-logo" />
+                      <div className="watch-main">
+                        <div className="watch-name">{ch.name}</div>
+                        <div className="watch-sub">{m ? m.programme.title : ch.group || 'Sports'}</div>
+                      </div>
+                      <button className="watch-play" onClick={(e) => { e.stopPropagation(); onPlay(ch) }}>
+                        <Play style={{ width: 16, height: 16 }} /> Watch
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </>
           )}
 
           <div className="section-title" style={{ paddingLeft: 0 }}>Recent form</div>

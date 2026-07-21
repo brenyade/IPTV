@@ -19,7 +19,9 @@ import { Back } from './Icons.jsx'
 
 function LeagueBadge({ league }) {
   const url = useLeagueBadge(league.id)
-  if (url) return <img className="lc-badge" src={url} alt="" loading="lazy" />
+  const [failed, setFailed] = useState(false)
+  if (url && !failed)
+    return <img className="lc-badge" src={url} alt="" loading="lazy" onError={() => setFailed(true)} />
   return <span className="lc-emoji">{league.emoji}</span>
 }
 

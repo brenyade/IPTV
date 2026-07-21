@@ -90,8 +90,11 @@ https://iptv-org.github.io/iptv/categories/news.m3u
   - **Sports news** — a headline feed (ESPN) across the major leagues.
   - **Gameday weather** — Open-Meteo forecast for the venue at kickoff.
   - **Head-to-head** tab — recent meetings and the series record between two teams.
-  - Pick a sport → **all its games** (browse by day) → click a game → the **channels
-    airing it** (matched from your EPG by team names, with a sport‑based fallback) plus
+  - Pick a sport → **all its games** (browse by day) → click a game → **where to
+    watch it**: the real TV broadcasters for that exact game (ESPN, TNT Sports, Sky
+    Sports, TSN, beIN… fetched per event from TheSportsDB, any country), each matched
+    to your playlist so it gets a **Watch** button when you have that channel; falls
+    back to your EPG (channels actually airing the game) when no listing exists. Plus
     **live stats** (score, status, venue, badges) from the API.
   - Also finds sports across your own channel names/categories/EPG for a "on your
     channels now" shelf and a sports‑only channel guide.

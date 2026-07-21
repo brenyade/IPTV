@@ -304,6 +304,34 @@ export async function leagueBadge(id) {
   return d.leagues?.[0]?.strBadge || ''
 }
 
+// Actual TV broadcasters for a specific game (ESPN, TSN, Sky Sports, …).
+export async function eventBroadcasters(eventId) {
+  const d = await get(`/lookuptv.php?id=${eventId}`)
+  const seen = new Set()
+  const out = []
+  for (const t of d.tvevent || []) {
+    const key = (t.strChannel || '') + '|' + (t.strCountry || '')
+    if (!t.strChannel || seen.has(key)) continue
+    seen.add(key)
+    out.push({ channel: t.strChannel, country: t.strCountry, logo: t.strLogo, id: t.idChannel })
+  }
+  return out
+}
+
+// Country -> flag emoji for the broadcaster list.
+export function countryFlag(country) {
+  const map = {
+    'United Kingdom': '🇬🇧', England: '🏴', 'United States': '🇺🇸', USA: '🇺🇸',
+    Canada: '🇨🇦', Australia: '🇦🇺', Ireland: '🇮🇪', Spain: '🇪🇸', France: '🇫🇷',
+    Germany: '🇩🇪', Italy: '🇮🇹', Portugal: '🇵🇹', Netherlands: '🇳🇱', Mexico: '🇲🇽',
+    Brazil: '🇧🇷', India: '🇮🇳', Japan: '🇯🇵', 'South Korea': '🇰🇷', 'Saudi Arabia': '🇸🇦',
+    Argentina: '🇦🇷', Turkey: '🇹🇷', Greece: '🇬🇷', Poland: '🇵🇱', Denmark: '🇩🇰',
+    Sweden: '🇸🇪', Norway: '🇳🇴', Finland: '🇫🇮', Switzerland: '🇨🇭', Austria: '🇦🇹',
+    Belgium: '🇧🇪', Russia: '🇷🇺', China: '🇨🇳', 'New Zealand': '🇳🇿', 'South Africa': '🇿🇦'
+  }
+  return map[country] || '🌐'
+}
+
 export async function lookupTeamFull(id) {
   const d = await get(`/lookupteam.php?id=${id}`)
   return normalizeTeam(d.teams?.[0])

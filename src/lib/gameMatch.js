@@ -49,6 +49,37 @@ export function channelsForGame(game, channels, epg) {
   return out
 }
 
+// Normalize a channel/broadcaster name for matching: drop quality tags,
+// bracketed notes, punctuation and common filler words.
+function normName(s) {
+  return (s || '')
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/\b(hd|fhd|uhd|sd|4k|8k|1080p?|720p?|480p?|60fps|channel|feed|raw)\b/g, ' ')
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+// Given a real broadcaster name (e.g. "Sky Sports Premier League", "ESPN"),
+// find matching channels in the user's playlist so we can offer a Watch button.
+export function matchBroadcasterChannels(broadcasterName, channels) {
+  const b = normName(broadcasterName)
+  if (b.length < 3) return []
+  return channels.filter((ch) => {
+    const c = normName(ch.name)
+    if (!c) return false
+    return (
+      c === b ||
+      c.startsWith(b + ' ') ||
+      c.endsWith(' ' + b) ||
+      c.includes(' ' + b + ' ') ||
+      (b.length >= 5 && c.includes(b))
+    )
+  })
+}
+
 // Sport-based fallback: channels that look like they carry this sport.
 export function likelyChannels(game, channels, limit = 12) {
   const re = SPORT_KEYWORDS[game.sport]
